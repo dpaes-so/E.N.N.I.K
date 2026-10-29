@@ -3,21 +3,7 @@ def relu(input):
         return (0)
     else:
         return(input)
-
-def neuron(input1, input2, weight1,weight2, bias):
-    res = input1 * weight1 + input2 * weight2 + bias
-    return relu(res)
-
-def layer(input1,input2):
-    res1 = neuron(input1, input2, 1, 1, 0)
-    res2 = neuron(input1, input2, 2, -1, 0)
-    return res1,res2
-
-def network(input1,input2):
-    rl1a, rl1b = layer(input1,input2)
-    rl2a, rl2b = layer(rl1a,rl1b)
-    return rl2a,rl2b
-
+    
 def calculate_error(target, prediction):
     return target - prediction
 
@@ -26,11 +12,42 @@ def calculate_loss(target, prediction):
     loss = error **2
     return loss
 
+def neuron_from_lists(inputs, weights, bias):
+    res = bias
 
-print(calculate_loss(1.0, 0.8))  # Expected: 0.04
-print(calculate_loss(1.0, 0.2))  # Expected: 0.64
-print(calculate_loss(1.0, 1.0))  # Expected: 0.0
-output1, output2 = network(2, 3)
-print(output1)
-print(output2)
+    if len(inputs) != len(weights):
+         raise ValueError("Inputs and weights must have the same length")
+    for i in range(len(inputs)):
+        res += inputs[i] * weights[i]
+    return relu(res)
+
+
+
+def layer_from_lists(inputs, weights, biases):
+    outputs = []
+    if len(biases) != len(weights):
+        raise ValueError("Different number of weights and biases")
+    for i in range(len(biases)):
+       outputs.append(neuron_from_lists(inputs,weights[i],biases[i]))
+    return outputs
+
+
+inputs = [4, 5]
+
+weights = [
+    [1, 2],
+    [2, -1],
+    [0.5, 3]
+]
+
+biases = [0, 1, -1]
+
+print(layer_from_lists(inputs, weights, biases))
+target = 10
+prediction = 14
+
+for weight in [1, 2, 2.5, 3]:
+    output = neuron_from_lists([4], [weight], 0)
+    print("w =",weight)
+    print("Loss:", calculate_loss(target, output))
 
